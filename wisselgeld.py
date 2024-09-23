@@ -20,10 +20,6 @@ print(f"Je hebt succesvol een waarde van {euro} euro en {cent} cent ingevuld\n")
 
 # input = input("Hoeveel eurocent moet er terug gegeven worden?\n(vul in de vorm 1.23 in)\n")
 
-# startbedrag=int(float(input)*100)
-
-# startbedrag = 79
-
 # values init
 munteenheden = [20,10,5,2,1] # indien deze wordt aangepast, pas ook de string functie aan zodat de print up-to-date blijft (is te automaten maar ben lui)
 munten = [] 

@@ -30,7 +30,6 @@ for x in range(hoogte): # zorgt dat je bovenaan begint
 
     message += "\n" 
 
-
 print(f"\n{message}")
 
 

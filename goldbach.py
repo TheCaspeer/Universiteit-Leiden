@@ -5,7 +5,6 @@ import sympy # import the libary sympy om hun priem getal generator te gebruiken
 # ik heb sympy gebruikt omdat ik dat eleganter vind dan gewoon hardcoded de array met priemgetallen neerplop 
 
 primes = list(sympy.primerange(0,1000)) # zet alle priemgetallen van 0 tot 1000 in de lijst (technisch kan je ook 2 tot 1000 doen maar idk vind ik lelijk en het is de memorysave niet waard)
-# print(primes)
 mistakes = 0 # maakt een counter voor alle situaties waar een combinatie niet te vinden is
 
 for x in range(3,1000):
@@ -27,5 +26,6 @@ for x in range(3,1000):
             mistakes+=1
 
 # print(f"Er {mistakes} instanties waarbij de som van twee priemgetallen niet overeenkomt met het getal")
+
 if mistakes==0:
     print(f"Er zijn geen fouten gevonden, dus het vermoeden van Goldbach klopt")
