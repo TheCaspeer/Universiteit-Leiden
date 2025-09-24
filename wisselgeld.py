@@ -21,7 +21,11 @@ print(f"Je hebt succesvol een waarde van {euro} euro en {cent} cent ingevuld\n")
 # input = input("Hoeveel eurocent moet er terug gegeven worden?\n(vul in de vorm 1.23 in)\n")
 
 # values init
-munteenheden = [20,10,5,2,1] # indien deze wordt aangepast, pas ook de string functie aan zodat de print up-to-date blijft (is te automaten maar ben lui)
+munteenheden = [20,5,2,1] # indien deze wordt aangepast, pas ook de string functie aan zodat de print up-to-date blijft (is te automaten maar ben lui)
+
+#  Nog steeds met de muntjes die we besproken hebben (dus geen hele euro munten of 50ct, zie bovenaan deze opgave
+# Hier staat niet bij dat 10 cent munten niet mogen, ik vindt dit best een onduidelijkheid en beetje raar dit ik hier vorig jaar punten aftrek voor kregen. Want het is heel logisch om te denken dat het gewoon toevallig niet voorkomt in het voorbeeld (ook gewoon omdat mijn code dus heel aanpasbaar was om het zonder 10 ook te laten werken).
+
 munten = [] 
 i=0 
 
@@ -51,16 +55,13 @@ if(munten[0]>0):
     stringvalues.append(f"{munten[0]} keer 20 cent,\n")
 
 if(munten[1]>0):
-    stringvalues.append(f"{munten[1]} keer 10 cent,\n")
+    stringvalues.append(f"{munten[1]} keer 5 cent,\n")
 
 if(munten[2]>0):
-    stringvalues.append(f"{munten[2]} keer 5 cent,\n")
+    stringvalues.append(f"{munten[2]} keer 2 cent,\n")
 
 if(munten[3]>0):
-    stringvalues.append(f"{munten[3]} keer 2 cent,\n")
-
-if(munten[4]>0):
-    stringvalues.append(f"{munten[4]} keer 1 cent\n")
+    stringvalues.append(f"{munten[3]} keer 1 cent\n")
 
 stringvalues+= f"teruggeven aan de klant. Dit is een totaal van {totMunten} munten"
 

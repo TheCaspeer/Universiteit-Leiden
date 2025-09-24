@@ -1,10 +1,21 @@
 # Naam: Casper Juffermans
 # Studentnummer: s4270118
 
-import sympy # import the libary sympy om hun priem getal generator te gebruiken
-# ik heb sympy gebruikt omdat ik dat eleganter vind dan gewoon hardcoded de array met priemgetallen neerplop 
 
-primes = list(sympy.primerange(0,1000)) # zet alle priemgetallen van 0 tot 1000 in de lijst (technisch kan je ook 2 tot 1000 doen maar idk vind ik lelijk en het is de memorysave niet waard)
+#prime gen, source: https://miro.medium.com/1*K0ZOSsmSzTMTaDxsD4t5hA.png
+primes = [2] # 2 in here to simplify prime generator
+
+for possiblePrime in range (1,1000,2): #step 2 to improve efficiency, as even numbers (except 2) are never primes 
+    isPrime = True
+    for num in range(2,possiblePrime):
+        if possiblePrime%num == 0:
+            isPrime = False
+            # break
+    if isPrime:
+        primes.append(possiblePrime)
+
+print(primes)
+
 mistakes = 0 # maakt een counter voor alle situaties waar een combinatie niet te vinden is
 
 for x in range(3,1000):

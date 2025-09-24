@@ -21,16 +21,25 @@ message="" # init een lege message voor modification
 width = hoogte + 1 # +1 zodat je dat ene vlakke stukje krijgt
 empty = "  " # whitespace zodat de trap van links naar rechts gaat
 
-for x in range(hoogte): # zorgt dat je bovenaan begint
-    # print(x+1) debug value, de +1 is om te compenseren voor index0
-    for a in range(0,(width-(x+1))): # zorgt dat er width-(inverse hoogte+1)
-        message += empty 
-    for b in range(0,(x+2)): # print inverse hoogte + 1 extra blokje
-        message += "# "
+width_total = hoogte + 1
 
-    message += "\n" 
+for x in range(1,hoogte):
+    # x is hier het niveau, vanaf boven getelt
+    width_blocks = 1+x 
+    width_empty = width_total - width_blocks - 1 # -1 to offset extra whitespace
+    for empty_tile in range(width_empty):
+        message += empty
+    for block in range(width_blocks-1):
+        message += "# " # whitespace after hash to prevent cluttering
+    message += "#" # los van de bovenste forloop, hierdoor is er rechts van de pyramide geen whitespace
+    
+    if(x != hoogte): # voorkomt dat bij de laatste rij er nog een witregel onder komt
+        message += "\n" 
 
 print(f"\n{message}")
+
+
+
 
 
     
