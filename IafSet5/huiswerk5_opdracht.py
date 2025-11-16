@@ -96,24 +96,101 @@ def plot(temp, lk, klasse):
     hebben een logaritmische schaal. Vergeet niet de assen te labelen (met eenheden), en geef duidelijk aan
     wat de hoofdreeks sterren, reuzen en superreuzen zijn.
     """
-    from matplotlib.ticker import LogLocator, FuncFormatter
+    from matplotlib.ticker import FuncFormatter
+    from matplotlib.colors import LinearSegmentedColormap
 
-    x_axis = np.array(temp)
-    y_axis = np.array(lk)
+    temp = np.array(temp, dtype=float)
+    lk = np.array(lk, dtype=float)
+    klasse = np.array(klasse, dtype=str)
+
     fig, ax = plt.subplots()
 
-    ax.scatter(x_axis, y_axis, s=5)
+    
+    #  Color gradient based on luminosity
+    cmap = LinearSegmentedColormap.from_list("red_blue_custom", ["darkred","orange","palegoldenrod","lightblue","darkblue"])
+    norm = plt.Normalize(np.min(temp), np.max(temp)) 
+
+    # different symbols for different stellar classes
+    markers = {
+        "I":  "8",
+        "II": "d",
+        "III":"s",
+        "IV": "v",
+        "V":  "*",
+    }
+
+    namen_markers = {
+        "I":  "Superreuzen",
+        "II": "Heldere reuzen",
+        "III":"Reuzen",
+        "IV": "Subreuzen",
+        "V":  "Hoofdreeks sterren",
+    }
+    
+    for stellar_class, marker in markers.items():
+        mask = (klasse == stellar_class)
+        if np.any(mask):
+            ax.scatter(
+                temp[mask],
+                lk[mask],
+                c=temp[mask], # color gradient values
+                cmap=cmap,
+                norm=norm,
+                marker=marker,
+                s=20,
+                label=f"{namen_markers[stellar_class]}", # legend label
+                zorder=1
+            )
+    
+    # log scale, x axis info
     ax.set_xscale("log")
     ax.set_yscale("log")
+    ax.set_xticks([40000,20000,10000,5000,2500])
+    ax.get_xaxis().set_major_formatter(plt.ScalarFormatter()) 
+    ax.minorticks_off()
     ax.invert_xaxis()
-    ax.set_xlabel("Temperatuur (K) (log)")
-    ax.set_ylabel("Lichtkracht (L_zon) (log)")
+
+    # custom limits 
+    ax.set_ylim(1e-3,1e6)
+    ax.set_xlim(40000,2000)
+
+    # radius lines
+    for log_r in np.linspace(-2,3,6):
+        radius = 10**log_r
+        x_r_lines = np.linspace(2000,40000,1000)
+        y_r_lines = radius**2 * (x_r_lines/5778)**4 # using T/T_sun to ensure units are correct
+
+        ax.plot(x_r_lines,y_r_lines, linestyle="--", color="white",zorder=2)
+        middle_point = (x_r_lines[len(x_r_lines)//2], y_r_lines[len(y_r_lines)//2])
+        ax.annotate(
+            f"R={log_r} R$_\odot$",
+            xy=middle_point,
+            xytext=(5,5), # offset for readability
+            textcoords='offset points',
+            color="white",
+        )
+
+
+
+    # labels and grid
+    ax.set_xlabel("Temperatuur (log(K))",c="white")
+    ax.set_ylabel(f"Lichtkracht (log(L/L$_\odot$))"  ,c="white")
     ax.grid(True)
 
-    ax.xaxis.set_major_locator(LogLocator(base=10))
-    ax.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f"{x:.2f}"))
+    # colors of different items
+    ax.set_facecolor("black") # background color
+    # tick colors
+    ax.tick_params(axis='x',colors='white') 
+    ax.tick_params(axis='y',colors='white') 
+    # spine colors
+    ax.spines['top'].set_color('white')
+    ax.spines['bottom'].set_color('white')
+    ax.spines['left'].set_color('white')
+    ax.spines['right'].set_color('white')
+    fig.patch.set_facecolor('gray') # figure background color
 
-    # ax.legend(["Hoofdreeks", "Reuzen", "Superreuzen"])
+    ax.legend()
+    
 
     plt.savefig("hr-diagram.png")
 
@@ -122,6 +199,7 @@ def main():
     """Vanaf hier roep je al je  functies aan.
     """
     temp, abs_mag, klasse, afstand = read()
+    print(klasse)
     lk = lichtkracht(abs_mag)
     app_mag = schijnbare_magnitude(abs_mag, afstand)
     massa_levensduur(app_mag, lk, afstand, abs_mag, temp, klasse)
