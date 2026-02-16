@@ -1,0 +1,25 @@
+# %ECSV 1.0
+# ---
+# delimiter: ','
+# datatype:
+# -  {name: name, datatype: string, description: Planet}
+# -  {name: Req, unit km: , datatype: float64, description: Equatorial Radius}
+# -  {name: Rmean, unit km: , datatype: float64, description: Mean Radius}
+# -  {name: mass, unit 1e+24*kg: , datatype: float64, description: Mass}
+# -  {name: density, unit g / cm3: , datatype: float64, description: Bulk density}
+# -  {name: Prot_sid, unit d: , datatype: float64, description: Sidereal rotation period}
+# -  {name: Porb_sid, unit yr: , datatype: float64, description: Sidereal orbit period}
+# -  {name: V10, unit mag: , datatype: float64, description: V(1,0)}
+# -  {name: albedo, datatype: float64, description: Geometric Albedo}
+# -  {name: g_eq, unit m / s2: , datatype: float64, description: Equatorial gravity}
+# -  {name: vesc, unit km / s: , datatype: float64, description: Escape velocity}
+# schema: astropy-2.0
+name,Req,Rmean,mass,density,Prot_sid,Porb_sid,V10,albedo,g_eq,vesc
+"Mercury",2440.53,2439.4,0.330103,5.4289,58.6462,0.2408467,-0.60,0.106,3.70,4.25
+"Venus",6051.8,6051.8,4.86731,5.243,-243.018,0.61519726,-4.47,0.65,8.87,10.36
+"Earth",6378.1366,6371.0084,5.97217,5.5134,0.99726968,1.0000174,-3.86,0.367,9.80,11.19
+"Mars",3396.19,3389.50,0.641691,3.9340,1.02595676,1.8808476,-1.52,0.150,3.71,5.03
+"Jupiter",71492,69911,1898.125,1.3262,0.41354,11.862615,-9.40,0.52,24.79,60.20
+"Saturn",60268,58232,568.317,0.6871,0.44401,29.447498,-8.88,0.47,10.44,36.09
+"Uranus",25559,25362,86.8099,1.270,-0.71833,84.016846,-7.19,0.51,8.87,21.38
+"Neptune",24764,24622,102.4092,1.638,0.67125,164.79132,-6.87,0.41,11.15,23.56
