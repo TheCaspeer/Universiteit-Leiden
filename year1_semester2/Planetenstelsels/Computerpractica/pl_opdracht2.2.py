@@ -21,7 +21,7 @@ ax1.set_ylabel('Flux')
 ax1.grid()
 
 # Binning the data
-binsize = 1/(len(phase)/100) # 75 bins, iets te weinig atm lulw
+binsize = 1/(len(phase)/100) # 75 bins
 binned = codecp2.bincurve(phase ,flux , binsize)
 phase_bin = binned [0]
 flux_bin = binned [1]
@@ -36,8 +36,8 @@ fig1.name = "Lightcurve of WASP-203"
 fig1.title = "Lightcurve of WASP-203"
 
 # The transit happens in flux (0.94,0.96), manually read from the plot
-x_transit = phase [(phase > -0.025) & ( phase < 0.025)]
-y_transit = flux [(phase > -0.025) & ( phase < 0.025)]
+x_transit = phase_bin [(phase_bin > -0.025) & ( phase_bin < 0.025)]
+y_transit = flux_bin [(phase_bin > -0.025) & ( phase_bin < 0.025)]
 transit_flux = np.mean(y_transit) # average flux during transit 
 print(f"Transit flux: {transit_flux*100:.4f}% van de totale flux")
 
