@@ -1,5 +1,6 @@
 from astronomy import *
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import numpy as np
 import codecp2
 from scipy.optimize import minimize
@@ -35,9 +36,10 @@ fig1.name = "Lightcurve of WASP-203"
 fig1.title = "Lightcurve of WASP-203"
 
 # The transit happens in flux (0.94,0.96), manually read from the plot
-y_transit = flux_bin[(flux_bin > 0.94) & (flux_bin < 0.96)]
+x_transit = phase [(phase > -0.025) & ( phase < 0.025)]
+y_transit = flux [(phase > -0.025) & ( phase < 0.025)]
 transit_flux = np.mean(y_transit) # average flux during transit 
-print(f"Transit flux: {transit_flux:.4f}% van de totale flux")
+print(f"Transit flux: {transit_flux*100:.4f}% van de totale flux")
 
 # Reading radial velocity data 
 file_loc2 = rf"{parent_dic}\WASP-203_RV.dat"
@@ -103,6 +105,18 @@ ax4.grid()
 ax3.plot(tijd, v_fitted(tijd), color='red', label='Fitted Curve', zorder=-1) # z-axis is behind the data so that any deviations are clearly visible
 ax3.legend()
 
-# Showing all plots
+# Showing and exporting all plots
 plt.tight_layout()
+try: 
+    fig1.savefig(rf"{parent_dic}\WASP-203_lightcurve.png") 
+except Exception as e:
+    print(f"Error saving lightcurve figure: {e}")
+
+try:
+    fig2.savefig(rf"{parent_dic}\WASP-203_radial_velocity.png") 
+except Exception as e:
+    print(f"Error saving radial velocity figure: {e}")
 plt.show()
+
+
+
