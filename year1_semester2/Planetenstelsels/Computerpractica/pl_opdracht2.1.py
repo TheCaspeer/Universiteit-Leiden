@@ -37,7 +37,7 @@ error_quadratic = np.abs(v_values2 - visa_speeds)
 
 import matplotlib.pyplot as plt
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+fig1, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
 # Plotting the result of the evaluated functions and the Visa-Visa formula, along with the original data points
 ax1.plot(distances, v_values1, label='Linear Interpolation (fit)', color='blue', linestyle='--')
@@ -59,7 +59,7 @@ ax2.set_ylabel('Absolute fout [km/s]')
 ax2.legend()
 ax2.grid()
 
-fig.suptitle('Analyse van de snelheid van komeet 67P als functie van afstand tot de zon')
+fig1.suptitle('Analyse van de snelheid van komeet 67P als functie van afstand tot de zon')
 
 # plt.show()
 
@@ -84,15 +84,29 @@ v_launch = np.linspace(0, 2, 100) # launch speeds to evaluate [m/s]
 v_escape = np.sqrt(2 * G * 1e13 / 2e3) # escape velocity for the given mass and radius
 
 bounce_speeds = stuitersnelheid(1e13, 1e4, 2e3, v_launch) 
-fig, ax = plt.subplots(figsize=(8, 6))
-ax.plot(v_launch, bounce_speeds, label='Stuitersnelheid', color='purple')
-ax.axhline(y=v_escape, color='red', linestyle='--', label='Escape velocity')
-ax.set_title('Stuitersnelheid als functie van de launchsnelheid')
-ax.set_xlabel('Launchsnelheid [m/s]')
-ax.set_ylabel('Stuitersnelheid [m/s]')
-ax.legend()
-ax.grid()
+fig2, ax3 = plt.subplots(figsize=(8, 6))
+ax3.plot(v_launch, bounce_speeds, label='Stuitersnelheid', color='purple')
+ax3.axhline(y=v_escape, color='red', linestyle='--', label='Escape velocity')
+ax3.set_title('Stuitersnelheid als functie van de launchsnelheid')
+ax3.set_xlabel('Launchsnelheid [m/s]')
+ax3.set_ylabel('Stuitersnelheid [m/s]')
+ax3.legend()
+ax3.grid()
+
+
+# Showing and exporting all plots
+plt.tight_layout()
+try: 
+    fig1.savefig(rf"{parent_dic}\67P_speed_analysis.png") 
+except Exception as e:
+    print(f"Error saving lightcurve figure: {e}")
+
+try:
+    fig2.savefig(rf"{parent_dic}\67P_bounce_speed.png") 
+except Exception as e:
+    print(f"Error saving radial velocity figure: {e}")
 plt.show()
+
 
 
 
