@@ -43,15 +43,12 @@ print(f"Transit flux: {transit_flux:.4f}% van de totale flux")
 file_loc2 = rf"{parent_dic}\WASP-203_RV.dat"
 data2 = np.loadtxt (rf"{file_loc2}")
 time = data2 [: ,0] # time [s]
+tijd = time/(3600.*24) # [s] -> [dagen]
 radial_velocity = data2 [: ,1] # radial velocity [km/s]
-
-# Fitting radial velocity (largely foreign code)
-gemeten_tijd = time/(3600.*24) # [s] -> [dagen]
-gemeten_radial_velocity = radial_velocity # [km/s]
 
 # Plotting radial velocity data
 fig2, (ax3,ax4) =  plt.subplots(1, 2, figsize=(14, 6))
-ax3.scatter(gemeten_tijd, gemeten_radial_velocity, s=10)
+ax3.scatter(tijd, radial_velocity, s=10)
 ax3.set_title('Radial Velocity of WASP-203')
 ax3.set_xlabel('Time [days]')
 ax3.set_ylabel('Radial Velocity [km/s]')
@@ -59,6 +56,7 @@ ax3.grid()
 fig2.name = "Radial Velocity of WASP-203"
 fig2.title = "Radial Velocity of WASP-203"
 
+# Fitting radial velocity (largely foreign code)
 def fit_functie (variabelen , tijd , v_gemeten ):
     # De variabelen die we gaan fitten.
     K = variabelen [0]
@@ -80,7 +78,7 @@ K_0_gok = 9.35 # Mean
 x0 = np.array ([ K_gok , phi_gok , P_gok , K_0_gok ])
 
 #Hier wordt de functie gefit aan de data.
-x = minimize (fit_functie , x0 , args =( gemeten_tijd , gemeten_radial_velocity ),method = 'Powell').x
+x = minimize (fit_functie , x0 , args =( tijd , radial_velocity ),method = 'Powell').x
 
 print(f"Fitted parameters: K = {x[0]:.4f} km/s, phi = {x[1]:.4f} days, P = {x[2]:.4f} days, K_0 = {x[3]:.4f} km/s \n"
       f"Giving the sinusoïde: v(t) = {x[0]:.4f} * sin(2 * pi * (t + {x[1]:.4f}) / {x[2]:.4f}) + {x[3]:.4f}")
@@ -92,7 +90,7 @@ P = x[2]
 K_0 = x[3]
 
 # Plotting fitted curve
-tijd_sample = np.linspace (gemeten_tijd.min(), gemeten_tijd.max(), 1000)
+tijd_sample = np.linspace (tijd.min(), tijd.max(), 1000)
 def v_fitted(tijd):
    return K * np.sin (2 * np.pi * (tijd + phi) / P) + K_0
 ax4.plot(tijd_sample, v_fitted(tijd_sample), color='red', label='Fitted Curve')
@@ -102,9 +100,8 @@ ax4.set_ylabel('Radial Velocity [km/s]')
 ax4.grid()
 
 # Overlaying fit on data
-ax3.plot(gemeten_tijd, v_fitted(gemeten_tijd), color='red', label='Fitted Curve', zorder=-1) # z-axis is behind the data so that any deviations are clearly visible
+ax3.plot(tijd, v_fitted(tijd), color='red', label='Fitted Curve', zorder=-1) # z-axis is behind the data so that any deviations are clearly visible
 ax3.legend()
-
 
 # Showing all plots
 plt.tight_layout()
