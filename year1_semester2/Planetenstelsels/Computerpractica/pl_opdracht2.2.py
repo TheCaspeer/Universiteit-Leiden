@@ -5,7 +5,7 @@ import codecp2
 from scipy.optimize import minimize
 
 # Reading lightcurve data
-parent_dic = r'year2_semester2\Planetenstelsels\Computerpractica'
+parent_dic = r'year1_semester2\Planetenstelsels\Computerpractica'
 file_loc1 = rf"{parent_dic}\WASP-203_lightcurve.dat"
 data1 = np.loadtxt (rf"{file_loc1}")
 phase =data1 [: ,0] # phase
@@ -32,6 +32,7 @@ ax2.set_xlabel('Phase')
 ax2.set_ylabel('Flux')
 ax2.grid()
 fig1.name = "Lightcurve of WASP-203"
+fig1.title = "Lightcurve of WASP-203"
 
 # The transit happens in flux (0.94,0.96), manually read from the plot
 y_transit = flux_bin[(flux_bin > 0.94) & (flux_bin < 0.96)]
@@ -44,18 +45,20 @@ data2 = np.loadtxt (rf"{file_loc2}")
 time = data2 [: ,0] # time [s]
 radial_velocity = data2 [: ,1] # radial velocity [km/s]
 
-# Plotting radial velocity data
-fig2, (ax3,ax4) =  plt.subplots(1, 2, figsize=(14, 6))
-ax3.scatter(time, radial_velocity, s=10)
-ax3.set_title('Radial Velocity of WASP-203')
-ax3.set_xlabel('Time (s)')
-ax3.set_ylabel('Radial Velocity (km/s)')
-ax3.grid()
-fig2.name = "Radial Velocity of WASP-203"
-
 # Fitting radial velocity (largely foreign code)
 gemeten_tijd = time/(3600.*24) # [s] -> [dagen]
 gemeten_radial_velocity = radial_velocity # [km/s]
+
+# Plotting radial velocity data
+fig2, (ax3,ax4) =  plt.subplots(1, 2, figsize=(14, 6))
+ax3.scatter(gemeten_tijd, gemeten_radial_velocity, s=10)
+ax3.set_title('Radial Velocity of WASP-203')
+ax3.set_xlabel('Time [days]')
+ax3.set_ylabel('Radial Velocity [km/s]')
+ax3.grid()
+fig2.name = "Radial Velocity of WASP-203"
+fig2.title = "Radial Velocity of WASP-203"
+
 def fit_functie (variabelen , tijd , v_gemeten ):
     # De variabelen die we gaan fitten.
     K = variabelen [0]
@@ -70,14 +73,17 @@ def fit_functie (variabelen , tijd , v_gemeten ):
     return np.sum (( v_gemeten - v_fit) ** 2)
 
 #De initiele gok waarmee minimize mee gaat beginnen .
-K_gok = 0.25
-phi_gok = 0.5
-P_gok = 0.2e6/(3600.*24) # 0.2 miljoen seconden -> dagen # Eigenlijk moet de plot ook in dagen maar fuck dat voor nu
-K_0_gok = 9.35
+K_gok = 0.20  # Amplitude
+phi_gok = 0 # Phase offset
+P_gok = 1.5 # Period
+K_0_gok = 9.35 # Mean
 x0 = np.array ([ K_gok , phi_gok , P_gok , K_0_gok ])
 
 #Hier wordt de functie gefit aan de data.
 x = minimize (fit_functie , x0 , args =( gemeten_tijd , gemeten_radial_velocity ),method = 'Powell').x
+
+print(f"Fitted parameters: K = {x[0]:.4f} km/s, phi = {x[1]:.4f} days, P = {x[2]:.4f} days, K_0 = {x[3]:.4f} km/s \n"
+      f"Giving the sinusoïde: v(t) = {x[0]:.4f} * sin(2 * pi * (t + {x[1]:.4f}) / {x[2]:.4f}) + {x[3]:.4f}")
 
 #De resulterende parameters
 K = x[0]
@@ -94,6 +100,10 @@ ax4.set_title('Fitted Radial Velocity Curve of WASP-203')
 ax4.set_xlabel('Time [days]')
 ax4.set_ylabel('Radial Velocity [km/s]')
 ax4.grid()
+
+# Overlaying fit on data
+ax3.plot(gemeten_tijd, v_fitted(gemeten_tijd), color='red', label='Fitted Curve', zorder=-1) # z-axis is behind the data so that any deviations are clearly visible
+ax3.legend()
 
 
 # Showing all plots
