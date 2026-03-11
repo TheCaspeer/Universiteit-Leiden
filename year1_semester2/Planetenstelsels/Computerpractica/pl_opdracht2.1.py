@@ -96,6 +96,7 @@ ax3.grid()
 
 # Showing and exporting all plots
 plt.tight_layout()
+parent_dic = r'year1_semester2\Planetenstelsels\Computerpractica'
 try: 
     fig1.savefig(rf"{parent_dic}\67P_speed_analysis.png") 
 except Exception as e:

@@ -117,6 +117,3 @@ try:
 except Exception as e:
     print(f"Error saving radial velocity figure: {e}")
 plt.show()
-
-
-
