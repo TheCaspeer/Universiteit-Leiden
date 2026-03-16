@@ -89,7 +89,7 @@ def plot_angles():
     plt.legend()
     plt.grid()
     plt.tight_layout()
-    plt.savefig('sun_angle_plot.png') # Save the plot as a PNG file
+    plt.savefig('sun_angle_plot.pdf') # Save the plot as a PDF file
     plt.show()
 
 
