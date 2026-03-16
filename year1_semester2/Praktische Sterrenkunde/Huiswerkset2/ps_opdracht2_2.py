@@ -16,12 +16,17 @@ theta_critical = np.arctan(fence_height/ (fence_distance/2)).to(u.deg)
 location = EarthLocation(lat=52.160*u.deg, lon=4.497*u.deg, height=0*u.m) #
 
 first_day = ap_time.Time('2026-01-01 00:00:00') # Start date
-last_day = ap_time.Time('2026-12-31 23:59:59') # End date
-days = np.arange((last_day - first_day).to(u.day).value) * u.day + first_day # Array of days in the year
-spring = days[:len(days)//2] 
-autumn = days[len(days)//2:]
+last_day = ap_time.Time('2026-12-31 00:00:00') # End date
+days = first_day + np.arange(int((last_day - first_day).to_value(u.day)) + 1) * u.day # Inclusive array of days in the year
+spring = days[0:len(days)//2] # First half of the year
+autumn = days[len(days)//2:] # Second half of the year
 
-
+# Nominal noon (UTC)
+# Local solar noon occurs near 12:00 local solar time.
+# Converting to UTC for east-positive longitude gives ~12h - longitude_offset.
+longitude_offset = location.lon / (360 * u.deg) * (24 * u.hour)
+def get_nominal_noon(day):
+    return day + 12 * u.hour - longitude_offset
 
 def get_angle(time):
     '''
@@ -31,7 +36,6 @@ def get_angle(time):
     '''
     AltAz_frame = AltAz(obstime=time, location=location) # Define the AltAz frame for the given time and location
     sun_altaz = get_sun(time).transform_to(AltAz_frame) # The suns position, relative to the given frame
-
     return sun_altaz.alt # Return the altitude of the sun, which is the angle it makes with the horizontal plan
 
 def max_angle(day):
@@ -40,44 +44,61 @@ def max_angle(day):
 
     @return: the maximum angle the sun makes with the horizontal plane during that day at the given location (location is defined globally)
     '''
-    times = day + np.arange(0, 60*24, 5) * u.minute # Array of times during the day, every 5 minutes
-    raise NotImplementedError("use nomimal noon instead!")
-    # use nominaal noon instead of different times, based on longitude
+    nominal_noon = get_nominal_noon(day)
 
-    angles = get_angle(times) # Get the angles for each time
-    return angles.max() # Return the maximum angle
+    angle = get_angle(nominal_noon) # Get the angles for the nomimal noon
+    return angle # Return the maximum angle
 
-def find_crossing(arr,season):
-    def get_bool(day):
-        return max_angle(day) >= theta_critical
+def find_crossings(day_array,season):
+    '''
+    @param day_array: array of astropy Time objects representing days
+    @param season: string, either 'spring' or 'autumn', indicating which half of the year to search for crossings
+
+    @return: the days on which the sun angle crosses the critical angle (theta_critical) in spring and autumn
+    '''
 
     match season:
-        case 'spring': 
-            def is_crossing(day):
-                return (get_bool(day) != get_bool(day - 1*u.day))
+        case 'spring':
+            def crosses_critical(day):
+                return (max_angle(day) != max_angle(day-1))
         case 'autumn':
-            def is_crossing(day):
-                return (get_bool(day) != get_bool(day + 1*u.day))
-    
-    low = 0
-    high = len(arr) - 1
-    while (low < high):
-        mid = (low + high) // 2
-        if is_crossing(arr[mid]):
-            high = mid
-        else:
-            low = mid + 1
-    return arr[low]
+            def crosses_critical(day):
+                return (max_angle(day) != max_angle(day+1))
 
+    low = 0
+    high = len(day_array) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if (crosses_critical(day_array[mid])):
+            return day_array[mid]
+        else: 
+            if max_angle(day_array[mid]) < theta_critical:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+def plot_angles():
+    angles = [max_angle(day) for day in days]
+    angle_values = u.Quantity(angles).to_value(u.deg)
+    plt.plot(days.to_datetime(), angle_values, label='Max Sun Angle')
+    plt.axhline(theta_critical.to_value(u.deg), color='r', linestyle='--', label='Critical Angle')
+    plt.xlabel('Date')
+    plt.ylabel('Maximum Sun Angle (degrees)')
+    plt.title('Maximum Sun Angle Throughout the Year')
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid()
+    plt.tight_layout()
+    plt.savefig('sun_angle_plot.png') # Save the plot as a PNG file
+    plt.show()
 
 
 def main():
-    spring_crossing = find_crossing(spring, 'spring')
-    autumn_crossing = find_crossing(autumn, 'autumn')
-    plot_angles()
-
+    spring_crossing, autumn_crossing = find_crossings(spring, 'spring'), find_crossings(autumn, 'autumn')
     print(f"Spring crossing: {spring_crossing.strftime('%Y-%m-%d')}")
     print(f"Autumn crossing: {autumn_crossing.strftime('%Y-%m-%d')}")
+
+    plot_angles()
             
 if __name__ == "__main__":
     main()
