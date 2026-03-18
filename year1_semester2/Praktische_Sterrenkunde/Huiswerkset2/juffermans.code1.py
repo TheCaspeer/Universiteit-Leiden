@@ -70,7 +70,7 @@ print(f"The mass and error on the black hole are: M = {mc1_M:.2e} ± {mc1_sigma_
       f"M = {mc2_M:.2e} ± {mc2_sigma_M:.2e} (Monte Carlo approach with alpha)\n" 
       f"Analytical approach: M = {analytical_M.to(u.Msun):.2e} ± {analytical_sigma_M.to(u.Msun):.2e}")
 
-plt.show()
 
-#print(f"Analytical approach: M = {analytical_M.to(u.Msun):.2e} ± {analytical_sigma_M.to(u.Msun):.2e}")
-#print(f"Monte Carlo approach: M = {mc_M.to(u.Msun):.2e} ± {mc_sigma_M.to(u.Msun):.2e}")
+parent_dic = rf'year1_semester2\Praktische_Sterrenkunde\Huiswerkset2'
+plt.savefig(rf'{parent_dic}\monte_carlo_histograms.png')
+plt.show()
