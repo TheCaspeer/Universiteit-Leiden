@@ -1,3 +1,6 @@
 year1_semester2/Praktische_Sterrenkunde/Observing1/raw_data/**/*
 !year1_semester2/Praktische_Sterrenkunde/Observing1/raw_data/**/
 # ignore the data, but keeps folders
+
+year1_semester2/Praktische_Sterrenkunde/Observing1/processed_data/**/*
+!year1_semester2/Praktische_Sterrenkunde/Observing1/processed_data/**/
