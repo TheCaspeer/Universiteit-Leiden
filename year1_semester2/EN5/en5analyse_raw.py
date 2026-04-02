@@ -64,7 +64,13 @@ def guass_fit(xdata, ydata, initial_mu, initial_sigma, init_amplitude):
             'sigma': popt[1],
             'amplitude': popt[2]
         }
-        return optimal_values
+
+        error_info = {
+            'mu_error': np.sqrt(pcov[0][0]),
+            'sigma_error': np.sqrt(pcov[1][1]),
+            'amplitude_error': np.sqrt(pcov[2][2])
+        }
+        return optimal_values, error_info
     
     except RuntimeError as e:
         print(f"Error during curve fitting: {e}")
