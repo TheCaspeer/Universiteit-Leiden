@@ -122,8 +122,8 @@ def analysis(sigma, sigma_error):
     wavelength_width = FWHM * pixel_width # [M]
     wavelength_width_error = FWHM_error * pixel_width # [M]
 
-    print(f"FWHM: {FWHM} ± {FWHM_error} pixels")
-    print(f"Wavelength width: {wavelength_width} ± {wavelength_width_error} meters")
+    print(f"FWHM: {FWHM:.4f} ± {FWHM_error:.4f} pixels")
+    print(f"Wavelength width: {wavelength_width:.4e} ± {wavelength_width_error:.4e} meters")
 
 if __name__ == "__main__":
     main()
