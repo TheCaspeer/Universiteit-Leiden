@@ -24,11 +24,14 @@ def main():
     initial_amplitude = max(y) # rough value, if need be can be manually ammended
 
     # Fitting
-    fit_info = get_fit(x,y, initial_mu, initial_sigma, initial_amplitude)
+    fit_info, error_info = get_fit(x,y, initial_mu, initial_sigma, initial_amplitude)
     print(f"Optimal parameters: mu = {fit_info['mu']}, sigma = {fit_info['sigma']}, amplitude = {fit_info['amplitude']}")
     mu = fit_info['mu']
     sigma = fit_info['sigma']
     amplitude = fit_info['amplitude']
+    sigma_error = error_info['sigma_error']
+
+    analysis(sigma, sigma_error)
 
     # Plotting (not necessary for data analysis)
     plot_fit(x,y,mu,sigma, amplitude)
@@ -106,6 +109,21 @@ def plot_fit(x,y,mu,sigma, amplitude):
     plt.legend()
     plt.grid()
     plt.show()
+
+
+def analysis(sigma, sigma_error):
+    '''
+    @param sigma: standard deviation of the Gaussian fit, this is the parameter we are interested in for data analysis
+    
+    '''
+    FWHM = 2 * (2 * np.log(2))**0.5 * sigma
+    FWHM_error = 2 * (2 * np.log(2))**0.5 * sigma_error
+    pixel_width = 3.75e-6 # [M]
+    wavelength_width = FWHM * pixel_width # [M]
+    wavelength_width_error = FWHM_error * pixel_width # [M]
+
+    print(f"FWHM: {FWHM} ± {FWHM_error} pixels")
+    print(f"Wavelength width: {wavelength_width} ± {wavelength_width_error} meters")
 
 if __name__ == "__main__":
     main()
