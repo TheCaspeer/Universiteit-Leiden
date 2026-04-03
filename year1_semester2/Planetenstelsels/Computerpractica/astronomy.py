@@ -26,5 +26,16 @@ def gravitational_force(m1: float, m2: float, r: float) -> float:
     force = G * m1 * m2 / r**2
     return force
 
+def center_of_mass(m1: float, m2: float, r1: float, r2: float) -> float:
+    """
+    Calculate the center of mass of a two-body system.
+    
+    @param m1: Mass of the first object [kg]
+    @param m2: Mass of the second object [kg]
+    @param r1: Position of the first mass [m]
+    @param r2: Position of the second mass [m]
 
-
+    @return: Position of the center of mass [m]
+    """
+    com = (m1 * r1 + m2 * r2) / (m1 + m2)
+    return com
