@@ -34,8 +34,6 @@ fig1.savefig('center_of_mass_plot.png')
 # Planetary information, relative to center of mass
 p_perihelion = 0.2 * stk.au  # Perihelion distance  [m]
 p_aphelion = 6 * stk.au  # Aphelion distance
-#  TODO: DIT IS RELEATIEF TOT DE ZON, WE HEBBEN RELATIEF TOT HET MASSAMIDDELPUNT NODIG, VERANDER DE CODE HIER DUS NOG VOOR!
-
 
 # "De zon doorloopt een een ellips geschaald met m_p/(m_sun+m_p)" - BS lecture 1 slide 47 (moet verslag in)
 scale_factor =  masses/(stk.solar_mass+masses)
@@ -55,5 +53,44 @@ ax.legend()
 ax.grid()
 fig2.savefig('zon_distance_plot.png')
 
-plt.show()
 
+''' 
+Opdracht 2: Atmosferen
+'''
+
+'''2.1'''
+
+def MaxBolzd(m: float, T: float, vmin: float) -> tuple[np.ndarray, np.ndarray]:
+    '''
+    Calculate the Maxwell-Boltzmann distribution for a given mass, temperature between a  minimum velocity and 30000 m/s.
+    
+    @param m (float): Mass of the particle [kg]
+    @param T (float): Temperature of the system [K]
+    @param vmin (float): Minimum velocity to consider [m/s]
+    
+    @return (tuple): Tuple containing the given velocities and their corresponding Maxwell-Boltzmann distribution values.
+    '''
+
+
+    
+    v = np.arange(vmin,30000,1)
+    f = (m/(2*np.pi*stk.k*T))**(3/2)* 4*np.pi*v**2*np.exp(-m*v**2/(2*stk.k*T))
+    return v,f
+
+'''2.2'''
+
+expected_speed = 422
+nitrogen_temp = 300
+nitrogen_mass = 28 * stk.atomic_mass # vo voor Rino
+
+fig2,ax = plt.subplots()
+ax.plot(MaxBolzd(nitrogen_mass, nitrogen_temp, 0)[0], MaxBolzd(nitrogen_mass, nitrogen_temp, 0)[1], label='N2 at 300K')
+ax.axvline(expected_speed, color='r', linestyle='--', label='Expected Speed (422 m/s)')
+ax.set_xlabel('Velocity [m/s]')
+ax.set_ylabel('Maxwell-Boltzmann Distribution')
+ax.set_xscale('log')
+ax.set_title('Maxwell-Boltzmann Distribution for Nitrogen at 300K')
+ax.legend()
+ax.grid()
+fig2.savefig('maxwell_boltzmann_nitrogen.png')
+plt.show()
