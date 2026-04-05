@@ -12,6 +12,7 @@ solar_radius = 6.96e8  # m (Radius of the Sun)
 earth_mass = 5.9736e24  # kg (Mass of the Earth)
 earth_radius = 6.371e6  # m (Radius of the Earth)
 jupiter_mass = 1.8986e27  # kg (Mass of Jupiter)
+moon_mass = 7.3477e22  # kg (Mass of the Moon)
 parsec = 3.086e16  # m (Parsec)
 atomic_mass = 1.6605e-27  # kg (Atomic mass unit)
 
@@ -32,7 +33,7 @@ def center_of_mass(m1: float, m2: float, r1: float, r2: float) -> float:
     """
     Calculate the center of mass of a two-body system.
     
-    @param m1: Mass of the first object [kg]i
+    @param m1: Mass of the first object [kg]
     @param m2: Mass of the second object [kg]
     @param r1: Position of the first mass [m]
     @param r2: Position of the second mass [m]
