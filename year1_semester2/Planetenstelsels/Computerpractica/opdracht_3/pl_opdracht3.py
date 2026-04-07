@@ -32,7 +32,7 @@ ax.grid()
 
 '''1.4'''
 a_zon = masses / stk.solar_mass * stk.au # [m]
-P_zon =( (4 * np.pi*82 * stk.au**3) / (stk.G * (stk.solar_mass+masses)) )**0.5 # [s]
+P_zon =( (4 * np.pi**2 * stk.au**3) / (stk.G * (stk.solar_mass+masses)) )**0.5 # [s]
 v_zon = 2 * np.pi * a_zon / P_zon # [m/s]
 fig2, ax = plt.subplots()
 ax.plot(masses_plot, v_zon, label='Orbital Velocity of the Sun')
@@ -261,14 +261,14 @@ save_fig = True
 if(save_fig):
     folder = rf'year1_semester2\Planetenstelsels\Computerpractica\opdracht_3\plots'
     fig1.savefig(f'{folder}/center_of_mass_plot.png') # 1.3 
-    fig2.savefig(f'{folder}/maxwell_boltzmann_gases.png') # 1.4
-    fig3.savefig(f'{folder}/temperature_distribution.png') # 1.5
-    fig4.savefig(f'{folder}/half_life_plot.png') # 2.2
-    fig5.savefig(f'{folder}/maxwell_boltzmann_gases.png') # 2.3
+    fig2.savefig(f'{folder}/orbital_velocity_mass.png') # 1.4
+    fig3.savefig(f'{folder}/sun_peri_apoapsis.png') # 1.5
+    fig4.savefig(f'{folder}/boltzmann_n2.png') # 2.2
+    fig5.savefig(f'{folder}/boltzmann_gases.png') # 2.3
     fig6.savefig(f'{folder}/temperature_half_life.png') # 2.6
     fig7.savefig(f'{folder}/escape_velocity_half_life.png') # 2.7
 
 # Show all figures
-show_figs = True
+show_figs = False
 if(show_figs):
     plt.show()
