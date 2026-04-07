@@ -10,13 +10,35 @@ import numpy as np
 
 def main():
     # File importing parameters
-    file_loc = rf'year1_semester2\EN5\m_-1_spectro.csv' # CHANGE BEFORE USING
+    # file_loc = rf'year1_semester2\EN5\m_-1_spectro.csv' # CHANGE BEFORE USING
+    file_loc = rf'year1_semester2\EN5\measurementname.csv'
     file_type = '.csv'
     delimiter = ','
 
-    # Data acquisition and handling
     x,y = get_data(file_loc, file_type, delimiter)
-    y = clean_data(y)
+    plt.scatter(x,y, s=0.5, color='red', label='Raw Data')
+    plt.legend()
+    plt.title('Raw Data Plot')
+    plt.xlabel('Pixel')
+    plt.ylabel('Intensity')
+    plt.show() # very rough plot, only to find the ranges necessary
+
+    # Manually set ranges
+    range1 = (390,395) # range for the first peak, change if necessary
+    range2 = (range1[1],410) # range for the second peak, change if
+
+    # get info for both peaks
+    mu1, sigma1 = get_info(x,y,range1)
+    mu2, sigma2 = get_info(x,y,range2)
+
+    analysis(mu1,mu2, sigma1,sigma2)
+
+    # Plotting (not necessary for data analysis)
+    # plot_fit(x,y,mu,sigma, amplitude)
+
+def get_info(x,y,range):
+    # Data  handling
+    x, y = clean_data(x,y,range)
 
     # Fit initial guess values 
     initial_mu = x[np.argmax(y)] # rough value, if need be can be manually ammended
@@ -29,12 +51,10 @@ def main():
     mu = fit_info['mu']
     sigma = fit_info['sigma']
     amplitude = fit_info['amplitude']
-    sigma_error = error_info['sigma_error']
 
-    analysis(sigma, sigma_error)
-
-    # Plotting (not necessary for data analysis)
     plot_fit(x,y,mu,sigma, amplitude)
+
+    return mu,sigma
 
 def get_data(file_loc, file_type, delimiter):
     """
@@ -57,17 +77,22 @@ def get_data(file_loc, file_type, delimiter):
     x,y = en5.read_file(file_loc, delimiter, file_type)
     return x,y
 
-def clean_data(y):
+def clean_data(x,y,range):
     """
     Normalizes and roughly removes noise from data
 
+    @param x: array of x values to be cleaned
     @param y: array of y values to be cleaned
-     
-     @return: array of cleaned y values
+    @param range: tuple of (start, end) indices for slicing the data
+
+    @return: arrays of cleaned x and y values
      """
+    # slicing the data to remove the very noisy edges, this does not impact the parameters we look for but makes the fit easier
+    x = x[range[0]:range[1]]
+    y = y[range[0]:range[1]]
     y_normalized = y / np.sum(y) # normalizes the data
     y_denoised = y_normalized - np.min(y_normalized) # very roughly removing noise, this does not impact the parameters we look for but makes the fit easier
-    return y_denoised
+    return x, y_denoised
 
 def get_fit(x,y, initial_mu, initial_sigma, initial_amplitude):
     """
@@ -101,7 +126,7 @@ def plot_fit(x,y,mu,sigma, amplitude):
     x_fit = np.linspace(min(x), max(x), 1000)
     y_fit = en5.gaussian(x_fit, mu, sigma,amplitude)
     
-    plt.scatter(x, y, label='Data',s=0.5, color='red')
+    plt.scatter(x, y, label='Data',s=2,color='red')
     plt.plot(x_fit, y_fit, label='Gaussian Fit')
     plt.xlabel('x')
     plt.ylabel('y')
@@ -110,20 +135,26 @@ def plot_fit(x,y,mu,sigma, amplitude):
     plt.grid()
     plt.show()
 
-
-def analysis(sigma, sigma_error):
+def analysis(mu1, mu2, sigma1, sigma2):
     '''
     @param sigma: standard deviation of the Gaussian fit, this is the parameter we are interested in for data analysis
     
     '''
-    FWHM = 2 * (2 * np.log(2))**0.5 * sigma
-    FWHM_error = 2 * (2 * np.log(2))**0.5 * sigma_error
-    pixel_width = 3.75e-6 # [M]
-    wavelength_width = FWHM * pixel_width # [M]
-    wavelength_width_error = FWHM_error * pixel_width # [M]
+    
+    # verschil in golflengtes gedeeld verschil in pixels'
 
-    print(f"FWHM: {FWHM:.4f} ± {FWHM_error:.4f} pixels")
-    print(f"Wavelength width: {wavelength_width:.4e} ± {wavelength_width_error:.4e} meters")
+    # Constants
+    wavelength1 = 588.9950954e-9 # [m] 
+    wavelength2 = 589.5924237e-9 # [m]
+
+    wavelength_difference = wavelength2 - wavelength1 # [m]
+
+    pixel_difference = mu1 - mu2 # [pixels]
+    pixel_error = np.sqrt(sigma1**2 + sigma2**2) # [pixels]
+
+    linear_disp  = abs(wavelength_difference / (pixel_difference)) # [m/pixel]
+    linear_disp_err =abs(wavelength_difference / (pixel_difference)**2 * pixel_error) # [m/pixel]
+    print(f"Linear dispersion: {linear_disp:.2e} ± {linear_disp_err:.2e} [m/pixel]")
 
 if __name__ == "__main__":
     main()

@@ -1,4 +1,4 @@
-import astronomy as stk
+import year1_semester2.Planetenstelsels.Computerpractica.opdracht_3.astronomy as stk
 
 parent_dic = 'year2_semester2\Planetenstelsels\Computerpractica'
 

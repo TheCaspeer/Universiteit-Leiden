@@ -1,4 +1,4 @@
-from astronomy import *
+from year1_semester2.Planetenstelsels.Computerpractica.opdracht_3.astronomy import *
 from scipy.interpolate import interp1d
 import numpy as np
 
