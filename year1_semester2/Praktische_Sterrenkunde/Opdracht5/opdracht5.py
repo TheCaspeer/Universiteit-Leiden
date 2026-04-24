@@ -2,12 +2,13 @@ import astropy.units as u
 import numpy as np
 import astropy as ap
 import os
+import matplotlib.pyplot as plt
+
 
 
 curr_folder = os.path.dirname(os.path.abspath(__file__))
 
-
-def read_txt(path: String):
+def read_file(filename: str):
     """
     Reads a text file and returns its contents as a dictionary.
     
@@ -15,14 +16,16 @@ def read_txt(path: String):
     
     @return dict: A dictionary containing the data from the text file.
     """''
-    path = rf"{curr_folder}/data/{path}"
+    path = rf"{curr_folder}/data/{filename}"
     data = np.genfromtxt(
         path,
         dtype=None,
         encoding="utf-8",
-        delimiter=None  # <-- THIS is the key
+        delimiter=None,
+        comments="#",
+        names=True
     )
-    data = dict(zip(data.dtype.names, data.T)) # Convert the structured array to a dictionary
+    data = {name: data[name] for name in data.dtype.names} # convert to dictionary 
     return data
 
 def cepheid_mag(period: u.Quantity, err_period: u.Quantity):
@@ -47,7 +50,7 @@ def cepheid_mag(period: u.Quantity, err_period: u.Quantity):
 
     return M, err_M
 
-def distance_modulus(m:float, M:float, err_M:float, err_m:float):
+def distance_modulus(m:float, M:float,  err_m:float, err_M:float):
     """
     Calculate the distance modulus given the apparent magnitude and absolute magnitude.
 
@@ -97,3 +100,26 @@ def reverse_hubble_law(velocity: u.Quantity, H0=70 * u.km / (u.s * u.Mpc)):
     return distance
 
 
+dat_files = ["PS20D2NGC14251.DAT", "PS20D2NGC25411.DAT", "PS20D2NGC33511.DAT","PS20D2NGC36211.DAT", "PS20D2NGC43211.DAT","PS20D2NGC45481.DAT"]
+dat_data = [read_file(dat_file) for dat_file in dat_files] # arr of dicts 
+
+for galaxy in dat_data:
+    # No error given assumes an error of 0
+    abs_mag = cepheid_mag(galaxy['period']*u.day,0*u.day)[0]
+    galaxy['abs_mags'] = abs_mag
+    std_M = np.std(abs_mag)
+    distances, err_distance = distance_modulus(galaxy['mv'], abs_mag, 0*u.mag, std_M*u.mag)
+
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+for index, galaxy in enumerate(dat_data):
+    name = dat_files[index][6:-4] # Only keeps NGC#### from the filaname
+
+    ax.errorbar(galaxy['mv'], galaxy['distances'].value, yerr=galaxy['err_distances'].value, fmt='o', label=name)
+
+ax.set_xlabel('Apparent Magnitude (mv)')
+ax.set_ylabel('Distance (pc)')
+ax.set_title('Distance vs Apparent Magnitude for Galaxies')
+ax.legend()
+plt.show()
