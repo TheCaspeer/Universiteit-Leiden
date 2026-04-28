@@ -67,34 +67,6 @@ def distance_modulus(m:float, M:float,  err_m:float, err_M:float):
     err_d = ((np.log(10) / 5) * d.value * np.sqrt(err_M**2 + err_m**2)) * u.pc    
     return d,err_d
 
-def hubble_law(distance: u.Quantity, H0=70 * u.km / (u.s * u.Mpc)):
-    """
-    This function calculates the recessional velocity of a galaxy based on its distance using Hubble's Law.
-    
-    @param distance (Mpc): The distance to the galaxy in megaparsecs (Mpc).
-    @param H0 (km/s/Mpc): The Hubble constant in km/s/Mpc. Default is 70 km/s/Mpc.
-    
-    @return velocity (km/s): The recessional velocity of the galaxy in km/s.
-    """
-    H0 = H0.to(u.km / (u.s * u.Mpc))  # Ensure Hubble constant is in km/s/Mpc
-    distance = distance.to(u.Mpc)  # Ensure distance is in Mpc
-    velocity = H0 * distance * u.km / u.s  # Calculate velocity in km/s
-    return velocity
-
-def reverse_hubble_law(velocity: u.Quantity, H0=70 * u.km / (u.s * u.Mpc)):
-    """
-    This function calculates the distance to a galaxy based on its recessional velocity using the reverse of Hubble's Law.
-    
-    @param velocity (km/s): The recessional velocity of the galaxy in km/s.
-    @param H0 (km/s/Mpc): The Hubble constant in km/s/Mpc. Default is 70 km/s/Mpc.
-    
-    @return distance (Mpc): The distance to the galaxy in megaparsecs (Mpc).
-    """
-    velocity = velocity.to(u.km / u.s)  # Ensure velocity is in km/s
-    H0 = H0.to(u.km / (u.s * u.Mpc))  # Ensure Hubble constant is in km/s/Mpc
-    distance = velocity / H0 * u.Mpc  # Calculate distance in Mpc
-    return distance
-
 
 dat_files = ["PS20D2NGC14251.DAT", "PS20D2NGC25411.DAT", "PS20D2NGC33511.DAT","PS20D2NGC36211.DAT", "PS20D2NGC43211.DAT","PS20D2NGC45481.DAT"]
 dat_data = [read_file(dat_file) for dat_file in dat_files] # arr of dicts 
