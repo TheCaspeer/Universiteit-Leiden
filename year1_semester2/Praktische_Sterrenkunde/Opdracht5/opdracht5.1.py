@@ -5,9 +5,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-
 curr_folder = os.path.dirname(os.path.abspath(__file__))
-
 def read_file(filename: str):
     """
     Reads a text file and returns its contents as a dictionary.
@@ -22,6 +20,7 @@ def read_file(filename: str):
         'period': data[:, 0] * u.day,
         'mv': data[:, 1] * u.mag
     }
+
 def cepheid_mag(period: u.Quantity, err_period: u.Quantity):
     """
     Calculate the absolute magnitude of a Cepheid variable star based on its period.
@@ -68,17 +67,9 @@ def distance_modulus(m:float, M:float,  err_m:float, err_M:float):
     return d,err_d
 
 
+# Reading Data
 dat_files = ["PS20D2NGC14251.DAT", "PS20D2NGC25411.DAT", "PS20D2NGC33511.DAT","PS20D2NGC36211.DAT", "PS20D2NGC43211.DAT","PS20D2NGC45481.DAT"]
-dat_data = [read_file(dat_file) for dat_file in dat_files] # arr of dicts 
-
-for galaxy in dat_data:
-    # No error given assumes an error of 0
-    abs_mag = cepheid_mag(galaxy['period'],0*u.day)[0]
-    galaxy['abs_mags'] = abs_mag
-    std_M = np.std(abs_mag)
-    distances, err_distance = distance_modulus(galaxy['mv'], abs_mag, 0*u.mag, std_M*u.mag)
-    galaxy['distances'], galaxy['err_distances'] = distances, err_distance
-
+galaxies = [read_file(dat_file) for dat_file in dat_files] # arr of dicts 
 v_hels = {
     "NGC1425": 1512,
     "NGC2541": 559,
@@ -88,9 +79,23 @@ v_hels = {
     "NGC4548": 486
 }
 
-for index, galaxy in enumerate(dat_data):
+
+# Calculating absolute magnitudes, distances and corresponding errors for each cepheid in each galaxy
+for galaxy in galaxies:
+    # No error given assumes an error of 0
+    abs_mag = cepheid_mag(galaxy['period'],0*u.day)[0]
+    galaxy['abs_mags'] = abs_mag
+    std_M = np.std(abs_mag)
+    distances, err_distance = distance_modulus(galaxy['mv'], abs_mag, 0*u.mag, std_M*u.mag)
+    galaxy['distances'], galaxy['err_distances'] = distances, err_distance
+
+
+# Calculating mean distance and magnitudes for each galaxy
+for index, galaxy in enumerate(galaxies):
     name = dat_files[index][6:-5] # Only keeps NGC#### from the filaname
 
+    # Preventing astropy units from interfering 
+    # TODO: Refactor to avoid this
     d_err = galaxy['err_distances'].value
     d = galaxy['distances'].value
 
@@ -101,6 +106,7 @@ for index, galaxy in enumerate(dat_data):
     app_mag = np.mean(galaxy['mv'].value)
     app_mag_err = np.std(galaxy['mv'].value)
 
+    # Writing to dictionary 
     galaxy['mean_distance'] = d_mean
     galaxy['mean_distance_err'] = d_mean_err
     galaxy['mean_app_mag'] = app_mag
@@ -108,23 +114,27 @@ for index, galaxy in enumerate(dat_data):
     galaxy['name'] = name
     galaxy['v_hel'] = v_hels[name]
 
-lit_value = 70 * u.km / (u.s * u.Mpc)
+lit_value = 70 * u.km / (u.s * u.Mpc) # Literature value for Hubble parameter, TODO: source
+
+# Calculating Hubble parameter for each galaxy and its deviation from the literature value
 hubble_params = []
-for galaxy in dat_data:
+for galaxy in galaxies:
     hubble_param = galaxy['v_hel']*(u.km/u.s) / galaxy['mean_distance'].to(u.Mpc)
     hubble_err = hubble_param * np.sqrt((galaxy['mean_distance_err']/galaxy['mean_distance'])**2)
 
     hubble_params.append(hubble_param.value)
     print(f"{galaxy['name']}: Hubble parameter = {hubble_param:.2f} ± {hubble_err:.2f}, Deviation from literature value = {(hubble_param - lit_value)/lit_value*100:.2f}%")
 
+# Calculating the mean Hubble parameter of the galaxies
 mean_hubble = np.mean(hubble_params)
 std_hubble = np.std(hubble_params)
 print(f"Mean Hubble parameter: {mean_hubble:.2f} ± {std_hubble:.2f}")
 
-fig1, ax1 = plt.subplots( figsize=(10, 6))
-fig2, ax2 = plt.subplots(figsize=(10, 6))
 
-for galaxy in dat_data:
+# Plotting the Hubble diagram and the residuals
+fig1, ax1 = plt.subplots(figsize=(10, 6))
+fig2, ax2 = plt.subplots(figsize=(10, 6))
+for galaxy in galaxies:
     ax1.errorbar(galaxy['v_hel'], galaxy['mean_distance'].to(u.Mpc).value, yerr=galaxy['mean_distance_err'].to(u.Mpc).value, fmt='o', label=galaxy['name'])
     ax1.annotate(galaxy['name'], (galaxy['v_hel'], galaxy['mean_distance'].to(u.Mpc).value), textcoords="offset points", xytext=(0,17), ha='center')
 
@@ -133,14 +143,14 @@ for galaxy in dat_data:
     ax2.annotate(galaxy['name'], (galaxy['v_hel'], residual), textcoords="offset points", xytext=(0,17), ha='center')
 
 
-ax1.set_ylabel('Distance (Mpc)')
-ax1.set_xlabel('Recessional Velocity (km/s)')
+ax1.set_ylabel('Distance [Mpc]')
+ax1.set_xlabel('Recessional Velocity [km/s]')
 ax1.set_title('Hubble Diagram')
 ax1.grid(True, color='lightgray', linestyle='--', zorder=-1)
 ax1.legend()
 
-ax2.set_ylabel('Residual Velocity (km/s)')
-ax2.set_xlabel('Recessional Velocity (km/s)')
+ax2.set_ylabel('Residual Velocity [km/s]')
+ax2.set_xlabel('Recessional Velocity [km/s]')
 ax2.set_title('Residuals from Hubble Law')
 ax2.grid(True, color='lightgray', linestyle='--', zorder=-1)
 
