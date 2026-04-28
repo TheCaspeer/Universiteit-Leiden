@@ -6,36 +6,6 @@ import matplotlib.pyplot as plt
 
 H0 = 70*u.km/u.s/u.Mpc
 
-def get_m(M,z):
-    '''
-    Calculate the apparent magnitude of a star given its absolute magnitude and redshift.
-    
-    @param M (float): The absolute magnitude of the star.
-    @param z (float): The redshift of the star.
-
-    @return m (float): The apparent magnitude of the star.
-    '''
-    
-    v = z * const.c
-    d = v / H0
-
-    m = 5 * np.log10(d.to(u.pc).value) - 5 + M.value
-    m = m * u.mag  # Convert to magnitudes
-
-    return m
-
-def get_M(m,m_err,z,z_err):
-    v = z * const.c
-    v_err = z_err * const.c
-    d = v / H0
-    d_err = v_err / H0
-
-    M = m - 5 * np.log10(d.to(u.pc).value) + 5
-    M_err = np.sqrt(m_err**2 + (5 * d_err / (d * np.log(10)))**2)
-
-
-    return M, M_err
-
 curr_folder = os.path.dirname(os.path.abspath(__file__))
 
 data = np.loadtxt(os.path.join(curr_folder,"Data","redshift_app_mag_SAi.html"), skiprows=1, dtype=np.dtype([
