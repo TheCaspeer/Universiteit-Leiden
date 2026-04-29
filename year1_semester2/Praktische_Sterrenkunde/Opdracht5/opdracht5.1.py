@@ -34,11 +34,11 @@ def cepheid_mag(period: u.Quantity, err_period: u.Quantity):
     # Using the period-luminosity relation for Cepheid variables
     period = period.value  
     err_period = err_period.value  
-    M = -2.43 * (np.log10(period)-1) - 4.05
+    M = -2.76 * (np.log10(period)-1) - 4.22
     M = M * u.mag  # Convert to magnitudes
 
     # Calculating the error
-    err_M = 2.43/(period * np.log(10)) * err_period
+    err_M = 2.76/(period * np.log(10)) * err_period
     err_M = err_M * u.mag  # Convert to magnitudes
 
     return M, err_M
