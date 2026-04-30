@@ -123,35 +123,43 @@ for galaxy in galaxies:
     hubble_err = hubble_param * np.sqrt((galaxy['mean_distance_err']/galaxy['mean_distance'])**2)
 
     hubble_params.append(hubble_param.value)
-    print(f"{galaxy['name']}: Hubble parameter = {hubble_param:.2f} ± {hubble_err:.2f}, Deviation from literature value = {(hubble_param - lit_value)/lit_value*100:.2f}%")
+    # print(f"{galaxy['name']}: Hubble parameter = {hubble_param:.2f} ± {hubble_err:.2f}, Deviation from literature value = {(hubble_param - lit_value)/lit_value*100:.2f}%")
 
 # Calculating the mean Hubble parameter of the galaxies
 mean_hubble = np.mean(hubble_params)
 std_hubble = np.std(hubble_params)
-print(f"Mean Hubble parameter: {mean_hubble:.2f} ± {std_hubble:.2f}")
+print(f"Mean Hubble parameter: {mean_hubble:.2f} ± {std_hubble:.2f} km/s/Mpc")
 
 
 # Plotting the Hubble diagram and the residuals
 fig1, ax1 = plt.subplots(figsize=(10, 6))
 fig2, ax2 = plt.subplots(figsize=(10, 6))
+residuals = []
 for galaxy in galaxies:
     ax1.errorbar(galaxy['v_hel'], galaxy['mean_distance'].to(u.Mpc).value, yerr=galaxy['mean_distance_err'].to(u.Mpc).value, fmt='o', label=galaxy['name'])
     ax1.annotate(galaxy['name'], (galaxy['v_hel'], galaxy['mean_distance'].to(u.Mpc).value), textcoords="offset points", xytext=(0,17), ha='center')
 
     residual = galaxy['v_hel']-mean_hubble*galaxy['mean_distance'].to(u.Mpc).value
+    residuals.append(residual)
     ax2.errorbar(galaxy['v_hel'], residual, yerr=galaxy['mean_distance_err'].to(u.Mpc).value*mean_hubble, fmt='o', label=galaxy['name'])
     ax2.annotate(galaxy['name'], (galaxy['v_hel'], residual), textcoords="offset points", xytext=(0,17), ha='center')
 
+ax2.axhline(np.std(residuals), color='red', linestyle='--', label='Velocity Dispersion (+1σ)')
+ax2.axhline(-np.std(residuals), color='red', linestyle='--', label='Velocity Dispersion (-1σ)')
+
+ax2.legend(loc="lower right")
 
 ax1.set_ylabel('Distance [Mpc]')
 ax1.set_xlabel('Recessional Velocity [km/s]')
 ax1.set_title('Hubble Diagram')
-ax1.grid(True, color='lightgray', linestyle='--', zorder=-1)
+ax1.grid(True, color='lightgray', linestyle='--', zorder=-1, alpha=0.7)
 ax1.legend()
 
 ax2.set_ylabel('Residual Velocity [km/s]')
 ax2.set_xlabel('Recessional Velocity [km/s]')
 ax2.set_title('Residuals from Hubble Law')
-ax2.grid(True, color='lightgray', linestyle='--', zorder=-1)
+ax2.grid(True, color='lightgray', linestyle='--', zorder=-1, alpha=0.7)
+
+print(f"The velocity dispersion is {np.std(residuals):.2f} km/s")
 
 plt.show()

@@ -68,6 +68,8 @@ ax1.errorbar(log_zhel_near, data_near["mb"], yerr=data_near["dmb"], fmt='o', lab
 ax1.plot(x_plot_near, y_near, label="Linear Fit (near)", color='red')
 ax1.set_xlabel("Log Redshift [log z]")
 ax1.set_ylabel("Apparent Magnitude [m]")
+ax1.set_xlim(x_plot_near.min()-0.1,-0.9)
+ax1.set_ylim(data_near["mb"].min()-1.5, data_near["mb"].max()+1.5)
 ax1.invert_yaxis() # Invert y-axis to have brighter stars at the top (magnitude has a reversed scale)
 ax1.grid(True, color='lightgray', linestyle='--', zorder=-1, alpha=0.7)
 ax1.legend()
